@@ -7,8 +7,6 @@ from pandas import read_csv
 from sklearn.metrics import confusion_matrix, accuracy_score
 from keras.models import Sequential
 from keras.utils import to_categorical
-from sklearn.decomposition import PCA
-from sklearn.neighbors import KNeighborsClassifier
 
 def main():
     batchSize = 100
@@ -22,11 +20,6 @@ def main():
     confusionMatrix = createConfusionMatrix(model, xTest, yTest)
     printModelSummary(model, trainAccuracy, testAccuracy, confusionMatrix)
     featureVectors, featureVectorsTrain = flattenLayer(model, xTest, xTrain)
-    pcaOutput = applyPCA2(featureVectors)
-    plotPCA(pcaOutput, yTest)
-    pcaOutputTrain, pcaOutputTest = applyPCA10(featureVectorsTrain, featureVectors)
-    knnAccuracy, knnPredictions, yTestIntegers  = applyKNN(pcaOutputTrain, pcaOutputTest, yTrain, yTest)
-    printKNNResults(knnAccuracy, knnPredictions, yTestIntegers)
 
 def loadData(trainFile, testFile):
     trainData = read_csv(trainFile)
@@ -102,43 +95,6 @@ def flattenLayer(model, xTest, xTrain):
     featureVectors = flattenLayerModel.predict(xTest)
     featureVectorsTrain = flattenLayerModel.predict(xTrain)
     return featureVectors, featureVectorsTrain
-
-def applyPCA2(featureVectors):
-    pca2 = PCA(n_components=2)
-    pcaOutput = pca2.fit_transform(featureVectors)
-    return pcaOutput
-
-def plotPCA(pca_result, yTest):
-    yTestClasses = argmax(yTest, axis=1)
-    plt.figure(figsize=(10, 8))
-    scatter = plt.scatter(pca_result[:, 0], pca_result[:, 1], c=yTestClasses, cmap='tab10', alpha=0.5) # Alpha is differnet compared to the learning rate
-    plt.xlabel('Principal Component 1')
-    plt.ylabel('Principal Component 2')
-    plt.title('PCA of CNN Features')
-    plt.colorbar(scatter)
-    plt.clim(-0.5, 9.5)
-    plt.show()
-
-def applyPCA10(featureVectorsTrain, featureVectors):
-    pca10 = PCA(n_components=10)
-    pca10.fit(featureVectorsTrain) 
-    pcaOutputTrain = pca10.transform(featureVectorsTrain)  
-    pcaOutputTest = pca10.transform(featureVectors)
-    return pcaOutputTrain, pcaOutputTest
-
-def applyKNN(pcaOutputTrain, pcaOutputTest, yTrain, yTest):
-    yTrainIntegers = argmax(yTrain, axis=1)
-    knn = KNeighborsClassifier(n_neighbors=5)
-    knn.fit(pcaOutputTrain, yTrainIntegers)  
-    knnPredictions = knn.predict(pcaOutputTest)
-    yTestIntegers = argmax(yTest, axis=1)
-    knnAccuracy = accuracy_score(yTestIntegers, knnPredictions)
-    return knnAccuracy, knnPredictions, yTestIntegers
-
-def printKNNResults(knnAccuracy, knnPredictions, yTestIntegers):
-    print("Test Accuracy with PCA and KNN (10 components):", knnAccuracy)
-    confusionMatrixPCA = confusion_matrix(yTestIntegers, knnPredictions)
-    print(confusionMatrixPCA)
 
 if __name__=="__main__":
      main()
