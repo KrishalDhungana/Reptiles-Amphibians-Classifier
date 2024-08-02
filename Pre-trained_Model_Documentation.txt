@@ -1,0 +1,26 @@
+This document outlines the steps for downloading, configuring, training, and testing the pre-trained models for the Reptile & Amphibian classification problem. All necessary functions and imports are located in CP468_Project_Code.ipynb.
+
+1. Retrieving the data:
+- The dataset containing Reptile & Amphibian images can be downloaded at https://www.kaggle.com/datasets/vencerlanz09/reptiles-and-amphibians-image-dataset/data
+  - Once this dataset is downloaded, move the Frog, Salamander, and Toad folders into a new 'Amphibian' folder and the
+    Chameleon, Crocodile_Alligator, Gecko, Iguana, Lizard, Snake, and Turtle_Tortoise folders into a new 'Reptile' folder 
+- Alternatively, the dataset (containing 'Amphibian' and 'Reptile' folders) can be found within this repository under the name new-reptiles-and-amphibians-image-dataset
+
+2. Downloading the pre-trained models:
+- Each of the pre-trained models utilizes the convolutional base of a Keras Application (MobileNetV2, InceptionV3, or Xception)
+- These CNN models are from Tensorflow's Keras Applications module, and can be downloaded with the following import in Python:
+  from tensorflow.keras.applications import MobileNetV2, InceptionV3, Xception
+  
+3. Configuring the pre-trained models:
+- Each pre-trained model utilizes the convolutional base from a Keras Application and adds new dense layers on top to better tailor the model for the Reptile & Amphibian classification task
+- After loading in the convolutional base of a Keras Application (e.g., InceptionV3), run build_and_compile_pretrained_model(), which (1) adds custom dense layers on top of the pre-trained base and (2) specifies the loss function and optimizer for the model
+
+4. Training the pre-trained models
+- Using training/validation data, the dense layer weights of each pre-trained model are optimized for Reptile & Amphibian classification
+- Run prepare_data() to create data generators for training, validation, and testing
+- Using the training and validation data generators, run train_model() for each compiled pre-trained CNN to update their weights 
+
+5. Testing the pre-trained models
+- Each compiled & trained pre-trained model is evaluated using the testing data generator to observe its generalizability
+- Run evaluate_model() for each pre-trained model to observe its accuracy on the testing data
+- Additionally, run generate_confusion_matrix() and plot_roc_curve() to retrieve additional metrics such as sensitivity, specificity, and AUC for each pre-trained model
